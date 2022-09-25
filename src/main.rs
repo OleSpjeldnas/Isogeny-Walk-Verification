@@ -1,243 +1,196 @@
-// use library from winterfell
-//extern crate winterfell;
-use winterfell::math::{fields::f64::BaseElement, FieldElement, StarkField};
-//use subtle::Choice;
-//extern crate winterfell;
-trait EvenElement {
-    fn is_even(&self) -> bool;
-    fn half_without_mod(&self) -> u64;
+
+use math::{fields::f128ext::BaseElement, FieldElement, log2, StarkField };
+use winterfell::{StarkProof, Prover, ProofOptions, HashFunction, FieldExtension, VerifierError,
+Trace};
+use prover::IsogenyProver;
+use examples::{Example};
+use std::time::Instant;
+
+use std::{
+    fs::File,
+    io::{self, BufRead, BufReader, Write},
+    path::Path,
+};
+use log::debug;
+pub mod air;
+use air::IsogenyAir;
+pub mod prover;
+
+fn lines_from_file(filename: impl AsRef<Path>) -> io::Result<Vec<(u128,u128)>> {
+    BufReader::new(File::open(filename)?).lines()
+    .map(|line| {
+        let line = line?;
+        //println!("{}",line);
+        let mut parts = line.trim().split(",");
+        //println!("{}", parts.next().unwrap().parse::<u128>().unwrap());
+        //println!("{}", parts.next().unwrap());
+        let a = parts.next().unwrap().parse::<u128>().unwrap();
+        let b = parts.next().unwrap().parse::<u128>().unwrap();
+        //println!("yes");
+        Ok((a,b))
+    })
+    .collect()
 }
-impl EvenElement for u64 {
-    fn is_even(&self) -> bool {
-        self % 2 == 0
-     
-    }
-    fn half_without_mod(&self) -> u64 {
-        self / 2
-    }
-}
-
-trait SQrt {
-    fn pow1(&self, exponent: u64, modulus: u64) -> u64;
-    fn gcd(&self, other: u64) -> Self;
-    fn order(&self, other: &Self) -> i32;
-    fn convertx2e(&self) -> [Self; 2] where Self: Sized;
-    fn sqrt(&self, modulus: u64) -> Option<u64>;
-}
-impl SQrt for u64 {
-    fn pow1(&self, exponent: u64, modulus: u64) -> u64 {   
-    if modulus == 1 { return 0 }
-    let modulus = modulus as u128;
-    let mut result = 1;
-    let mut base = *self as u128;
-    let mut exp = exponent;
-    base = base % modulus;
-    while exp > 0 {
-        if exp % 2 == 1 {
-            result = result * base % modulus;
-        }
-        exp = exp >> 1;
-        //println!("exp is {}", exp);
-        //println!("base is {}", base);
-        base = base * base % modulus
-    }
-    result as u64
-        
-    }
-    fn gcd(&self, other: u64) -> Self {
-        let mut a = *self;
-        let mut b = other;
-        while b != 0 {
-            let temp = b;
-            b = a % b;
-            a = temp;
-        }
-        a
-    }
-    fn order(&self, other: &Self) -> i32 {
-        let s = *self;
-        let t = *other;
-        if s.gcd(t) != 1 {
-            return -1;
-        }
-        let mut k = 1;
-        loop {
-            if t.pow1(k, s) == 1 {
-                return k as i32;
-            }
-            k += 1;
-        }
-    }
-    fn convertx2e(&self) -> [Self; 2] where Self: Sized {
-        let mut x = *self;
-        let mut e = 0;
-        while x.is_even() {
-            x = x.half_without_mod();
-            e += 1;
-        }
-        [x, e]
-    }
-    fn sqrt(&self, modulus: u64) -> Option<u64>{
-        if self.gcd(modulus) != 1 {
-            return None;
-        }
-        if self.pow1((modulus-1)/2, modulus) != 1 {
-            return None;
-        }
-        let [s, e] = (modulus-1).convertx2e();
-        let mut q = 2u64;
-
-        loop {
-            if q.pow1((modulus-1)/2, modulus) == modulus-1 {
-                break;
-            }
-            q += 1;}
-
-            let mut x = self.pow1((s+1)/2, modulus);
-            let mut b = self.pow1(s, modulus);
-            let mut g = q.pow1(s, modulus);
-            let mut r = e as u32;
-            loop {
-                let mut m = 0u32;
-                while m < r {
-                    if modulus.order(&b) == -1 {
-                        return None
-                    }
-                    if modulus.order(&b) == 2u64.pow(m) as i32 {
-                        break;
-                    }
-
-                    m += 1;}
-                if m == 0 {
-                    return Some(x)
-                }
-                x = ((x as u128) * (g.pow1(2u64.pow(r-m-1), modulus) as u128) % (modulus as u128)) as u64;
-                g = g.pow1(2u64.pow(r-m), modulus);
-                b = ((b as u128) * (g as u128) % (modulus) as u128) as u64;
-
-                if b == 1 {
-                    return Some(x)
-                }
-                r = m;
-
-            }
-        }
-
-    }
-
-trait Sqrt {
-    fn pow1(&self,exponent: u64, modulus: u64) -> u64;
-    fn gcd(&self, other: &Self) -> Self;
-    fn order(&self) -> u64;
-    fn convertx2e(&self) -> [u64;2];
-    fn sqrt(&self) -> Option<BaseElement>;
-}
-impl Sqrt for BaseElement {
-    fn pow1(&self, exponent: u64, modulus: u64) -> u64 {
-        let modulus = modulus as u128;
-        let mut result = 1;
-        let mut base = self.as_int() as u128;
-        base = base % modulus;
-        let mut ex = exponent;
-        
-        while ex > 0 {
-            if ex.is_even() {
-                result = (result * base) % modulus;
-            } 
-            base = (base * base) % modulus;
-            ex = ex.half_without_mod();
-            
-        }
-        result as u64
-    }
-    fn gcd(&self, other: &Self) -> Self {
-        if other.as_int() == 0 {
-            return *self;
-        }
-        self.gcd(&BaseElement::new(self.as_int() % other.as_int()))
-    }
-    fn order(&self) -> u64 {
-        //const MODULUS: u64 = 2u64.pow(64) - 2u64.pow(32) + 1;
-        let mut k = 3u64;
-        loop {
-            if self.exp(k).as_int() == 1 {
-                return k;
-            }
-            k += 1;
-        }
-}
-fn convertx2e(&self) -> [u64;2] {
-    let mut e = 0u64;
-    let mut x = *self;
-    while x.as_int().is_even() {
-        x = BaseElement::new(x.as_int().half_without_mod());
-        e += 1;
-    }
-    [x.as_int(), e]
-}
-    fn sqrt(&self) -> Option<BaseElement> {
-        const MODULUS: u64 = 2u64^(64) - 2u64^(32) + 1;
-        if self.pow1((MODULUS-1)/2, MODULUS) == MODULUS - 1 {
-            return None;
-        }
-        if self.as_int().gcd(MODULUS) != 1 {
-            return None;
-        }
-        let [s, e] = BaseElement::new(MODULUS-1).convertx2e();
-        let mut q = BaseElement::new(2);
-        loop {
-            //println!("q = {}", q.as_int());
-            if q.pow1((MODULUS-1)/2, MODULUS) == MODULUS - 1 {
-                break;
-            }
-            q += BaseElement::new(1);
-        }
-        let mut x = self.exp((s+1)/2);
-        let mut b = self.exp(s);
-        let mut g = q.exp(s);
-        let mut r = e;
-        loop {
-            println!("hello");
-            let mut m = 0;
-            while m < r {
-                if MODULUS.order(&b.as_int()) == -1 {
-                    println!("minus one");
-                    return None
-                }
-                if MODULUS.order(&b.as_int()) as u64 == 2^m{
-                    break;
-                }
-                m += 1;
-            }
-            if m == 0 {
-                return Some(x);
-            }
-            //assert!(m < r);
-            x = x*BaseElement::new(g.pow1(2^((BaseElement::new(r)-BaseElement::new(m)-BaseElement::new(1)).as_int()), MODULUS));
-            g = BaseElement::new(g.pow1(2^(r-m), MODULUS));
-            b *= g;
-            if b.as_int() == 1 {
-                return Some(x);
-            }
-            r = m;
-        }
-
-    }   
-}
-
 fn main() {
-    const MODULUS: u64 = 0xFFFFFFFF00000001;
-    const J_MINUS: BaseElement = BaseElement::new(1728);
-    const J_0: BaseElement = BaseElement::new(287496);
-    let j_0_2 = J_0.square();
-    let j_0_3: BaseElement = J_0.exp(3); 
-    let j_0_4: BaseElement = J_0.exp(4);
-    let j_minus_2 = J_MINUS.square();
+    // First get the points on the recorded isogeny walk, and define the 
+    // polynomial psi
+    let lines = lines_from_file("small_roots.txt").expect("Could not load lines");
+    let roots: Vec<BaseElement> = lines.iter().map(|(a,b)| BaseElement::new(*a, *b)).collect();
+    let _psi = create_psi(&roots);
+    let phii = create_phii(&roots);
+    //println!("phi: {}, phii: {}, psi: {}", roots[0],phii[0],_psi[0]);
 
-    let d = j_0_4 - BaseElement::new(2976)*j_0_3+BaseElement::new(2532192)*j_0_2-BaseElement::new(2976)*J_0*J_MINUS-BaseElement::new(645205500)*J_0-BaseElement::new(3)*j_minus_2+BaseElement::new(324000)*J_MINUS- BaseElement::new(8748000000);
-    //let t: BaseElement = BaseElement::new(4611686018427387904).square();
-    //println!("{}", BaseElement::new(100).sqrt().unwrap().as_int());  
-    println!("{}", 1000u64.sqrt(MODULUS).unwrap()); 
-    //println!("{}", MODULUS);
+    //let trace = IsogenyProver::build_trace(roots, _psi); 
+    //let t = trace.main_segment();
+    //println!("Phi: {}, Phii: {},", mod_poly(t.get(0, 0),t.get(1, 0)),t.get(2, 0)*(t.get(0,0)-t.get(1,1)));
+    //let secret_inputs = (roots, _psi);
+    env_logger::Builder::new()
+    .format(|buf, record| writeln!(buf, "{}", record.args()))
+    .filter_level(log::LevelFilter::Debug)
+    .init();
+    let options = ProofOptions::new(
+        28,
+        8,
+        16,
+        HashFunction::Blake3_256,
+        FieldExtension::None,
+        8,
+        256
+    );
+
+    //let psi = create_psi(&roots);
+    //let phii = create_phii(&roots);
+    //let phiii = create_phiii(&roots);
+    //for i in 0..roots.len() {
+    //    println!("i: {},\n Phi: {}, \n Phii: {}, \n Phiii: {}\n",i, roots[i], phii[i], _psi[i]);
+    //    println!("First Constraint: {}", mod_poly(roots[i], phii[i]));
+    //    println!("Second Constraint: {}", psi[i]*(roots[i]-phii[i+1]));
+
+    //}
+    //return ();
+    //let mut phii: Vec<BaseElement> = roots[1..].to_vec();
+    //let n = roots.len();
+    //phii.push(roots[n-3]);
+    //for i in 0..n-1 {
+    //    let s = roots[i];
+    //    let t = phii[i+1];
+    //    let v = phii[i];
+    //    println!("psi: {:?}", psi[i]*(s-t));
+    //    println!("mod: {:?}", mod_poly(s, v));
+    //}
+    //println!("psi: {:?}", (roots[14]-phii[15]));
+    //return ();
+    let now = Instant::now();
+    let gen_isogeny_walk_proof = get_example(options,roots);
+    let isogeny_walk_proof = gen_isogeny_walk_proof.prove();
+    //let proof_gen_time = now.elapsed().as_millis();
+    let proof_bytes = isogeny_walk_proof.to_bytes();
+    //let proof_size = proof_bytes.len();
+    let parsed_proof = StarkProof::from_bytes(&proof_bytes).unwrap();
+    assert_eq!(isogeny_walk_proof, parsed_proof);
+    let now = Instant::now();
+    match gen_isogeny_walk_proof.verify(isogeny_walk_proof) {
+        Ok(_) => debug!(
+            "Proof verified in {:.1} ms",
+            now.elapsed().as_micros() as f64 / 1000f64
+        ),
+        Err(msg) => debug!("Failed to verify proof: {}", msg),
+    }
 }
 
+fn create_psi(root_arr: &Vec<BaseElement>) -> Vec<BaseElement> {
+    let mut psi: Vec<BaseElement> = Vec::new();
+    let phii: Vec<BaseElement> = create_phiii(root_arr);
+    let l = root_arr.len();
+    for i in 0..l-2 {
+        let psi_el: BaseElement = (root_arr[i]-phii[i]).inv();
+        psi.push(psi_el);
+        //println!("{}: {}",i, psi_el);}
+    }
+        psi.push((root_arr[l-2]-root_arr[l-3]).inv());
+        psi.push((root_arr[l-2]-root_arr[l-3]).inv());
+        //println!("Root: {}", psi[l-1]);
+    psi
+}
+fn create_phii(root_arr: &Vec<BaseElement>) -> Vec<BaseElement> {
+    let mut phii: Vec<BaseElement> = root_arr[1..].to_vec();
+    let l = root_arr.len();
+    phii.push(root_arr[l-2]);
+    phii
+}
+fn create_phiii(root_arr: &Vec<BaseElement>) -> Vec<BaseElement> {
+    let mut phiii: Vec<BaseElement> = root_arr[2..].to_vec();
+    let l = root_arr.len();
+    phiii.push(BaseElement::ZERO);
+    phiii.push(BaseElement::ZERO);
+    phiii
+}
+
+pub fn get_example(options: ProofOptions, result: Vec<BaseElement>) -> Box<dyn Example> {
+    Box::new(IsogenyWalkProof::new(
+        options,
+        result
+    ))
+}
+
+pub struct IsogenyWalkProof {
+    options: ProofOptions,
+    result: (Vec<BaseElement>, Vec<BaseElement>)
+}
+impl IsogenyWalkProof {
+    pub fn new(options: ProofOptions, root_arr: Vec<BaseElement>) -> IsogenyWalkProof {
+       
+        let phi = root_arr.clone();
+        let psi = create_psi(&root_arr);
+        //println!("Verifying proof...");
+
+
+        IsogenyWalkProof{
+            options,
+            result: (phi, psi),
+        }
+    }
+}
+impl Example for IsogenyWalkProof {
+    fn prove(&self) -> StarkProof {
+        //let result = &self.result;
+       
+        // create a prover
+        let prover = IsogenyProver::new(self.options.clone());
+
+        // generate execution trace
+        let now = Instant::now();
+        let (phi, psi) = &self.result;
+        //let trace = IsogenyProver::build_trace(phi.to_vec(), psi.to_vec()); 
+        //let t = trace.main_segment();
+        
+        let trace = IsogenyProver::build_trace(phi.to_vec(), psi.to_vec()); 
+    
+        let trace_width = trace.width();
+        let trace_length = trace.length();
+        debug!(
+            "Generated execution trace of {} registers and 2^{} steps in {} ms",
+            trace_width,
+            log2(trace_length),
+            now.elapsed().as_millis()
+        );
+
+        // generate the proof
+        prover.prove(trace).unwrap()
+    }
+
+    fn verify(&self, proof: StarkProof) -> Result<(), VerifierError> {
+        winterfell::verify::<IsogenyAir>(proof, self.result.0[0])
+    }
+
+    fn verify_with_wrong_inputs(&self, proof: StarkProof) -> Result<(), VerifierError> {
+        winterfell::verify::<IsogenyAir>(proof, self.result.0[0]+BaseElement::ONE)
+    }
+}
+fn mod_poly<E: FieldElement + From<BaseElement>>(x: E, y: E) -> E {
+    x*x*x+y*y*y-x*x*y*y+E::from(1488u128)
+    *(x*x*y+y*y*x)-E::from(162000u128)*
+    (x*x+y*y)+E::from(40773375u128)*x*y
+    +E::from(8748000000u128)*(x+y)-
+    E::from(157464000000000u128)
+}
