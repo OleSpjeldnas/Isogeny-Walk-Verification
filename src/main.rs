@@ -57,37 +57,16 @@ fn main() {
         8,
         256
     );
-
-    //let psi = create_psi(&roots);
-    //let phii = create_phii(&roots);
-    //let phiii = create_phiii(&roots);
-    //for i in 0..roots.len() {
-    //    println!("i: {},\n Phi: {}, \n Phii: {}, \n Phiii: {}\n",i, roots[i], phii[i], _psi[i]);
-    //    println!("First Constraint: {}", mod_poly(roots[i], phii[i]));
-    //    println!("Second Constraint: {}", psi[i]*(roots[i]-phii[i+1]));
-
-    //}
-    //return ();
-    //let mut phii: Vec<BaseElement> = roots[1..].to_vec();
-    //let n = roots.len();
-    //phii.push(roots[n-3]);
-    //for i in 0..n-1 {
-    //    let s = roots[i];
-    //    let t = phii[i+1];
-    //    let v = phii[i];
-    //    println!("psi: {:?}", psi[i]*(s-t));
-    //    println!("mod: {:?}", mod_poly(s, v));
-    //}
-    //println!("psi: {:?}", (roots[14]-phii[15]));
-    //return ();
     let now = Instant::now();
     let gen_isogeny_walk_proof = get_example(options,roots);
     let isogeny_walk_proof = gen_isogeny_walk_proof.prove();
+    println!("Here now");
     //let proof_gen_time = now.elapsed().as_millis();
     let proof_bytes = isogeny_walk_proof.to_bytes();
     //let proof_size = proof_bytes.len();
     let parsed_proof = StarkProof::from_bytes(&proof_bytes).unwrap();
     assert_eq!(isogeny_walk_proof, parsed_proof);
+    //println!("now here");
     let now = Instant::now();
     match gen_isogeny_walk_proof.verify(isogeny_walk_proof) {
         Ok(_) => debug!(
