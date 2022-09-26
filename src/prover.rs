@@ -1,5 +1,5 @@
-use super::{BaseElement, IsogenyAir, FieldElement, ProofOptions, StarkField};
-use winterfell::{Prover, Trace, TraceTable};
+use super::{BaseElement, IsogenyAir, ProofOptions, StarkField};
+use winterfell::{Prover, TraceTable};
 // FIBONACCI PROVER
 // ================================================================================================
 
@@ -20,13 +20,6 @@ impl IsogenyProver {
     ) -> TraceTable<BaseElement> {
         let mut phii: Vec<BaseElement> = phi[1..].to_vec();
         phii.push(phi[phi.len()-3]);
-        //for i in 0..phi.len()-1 {
-        //    let s = phi[i];
-        //    let t = phii[i+1];
-        //    println!("psi: {:?}", psi[i]*(s-t));
-        //}
-        //println!("phii: {:?}", psi[14]*(phi[14]-phii[15]));
-        //println!("phi: {:?}", vec![phi[14], phii[14], psi[14]]);
         TraceTable::init(vec![phi, phii, psi])
     }
 }

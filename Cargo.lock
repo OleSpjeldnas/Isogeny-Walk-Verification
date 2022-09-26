@@ -135,7 +135,7 @@ checksum = "2eac3c0b9fa6eb75255ebb42c0ba3e2210d102a66d2795afef6fed668f373311"
 [[package]]
 name = "examples"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "blake3",
  "env_logger",
@@ -478,7 +478,7 @@ checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 [[package]]
 name = "winter-air"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "winter-crypto",
  "winter-fri",
@@ -489,7 +489,7 @@ dependencies = [
 [[package]]
 name = "winter-crypto"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "blake3",
  "sha3",
@@ -500,7 +500,7 @@ dependencies = [
 [[package]]
 name = "winter-fri"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "winter-crypto",
  "winter-math",
@@ -510,7 +510,7 @@ dependencies = [
 [[package]]
 name = "winter-math"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "ethnum",
  "winter-utils",
@@ -519,7 +519,7 @@ dependencies = [
 [[package]]
 name = "winter-prover"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "log",
  "winter-air",
@@ -532,7 +532,7 @@ dependencies = [
 [[package]]
 name = "winter-rand-utils"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "rand",
  "winter-utils",
@@ -541,12 +541,12 @@ dependencies = [
 [[package]]
 name = "winter-utils"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 
 [[package]]
 name = "winter-verifier"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "winter-air",
  "winter-crypto",
@@ -558,7 +558,7 @@ dependencies = [
 [[package]]
 name = "winterfell"
 version = "0.4.0"
-source = "git+https://github.com/OleSpjeldnas/winterfell#786f2908842522d634bf1b75c80fedf8ae33ea0b"
+source = "git+https://github.com/OleSpjeldnas/winterfell#723020607f2d35d0e433764f52af492fd2d0e850"
 dependencies = [
  "winter-prover",
  "winter-verifier",
