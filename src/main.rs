@@ -39,15 +39,24 @@ fn main() -> std::io::Result<()> {
         let mut benchmark_str = "".to_owned();
     for i in 4..20 {
         println!("{}", 2usize.pow(i));
+
+        let mut prover_i: Vec<usize> = Vec::new();
+        let mut verifier_i: Vec<usize> = Vec::new();
+        let mut size_i: Vec<usize> = Vec::new();
+        for _ in 0..20 {
         let benchmark_i = prove_and_verify(&roots[..2usize.pow(i)].try_into().unwrap());
+        prover_i.push(benchmark_i[0]);
+        verifier_i.push(benchmark_i[2]);
+        size_i.push(benchmark_i[1]);
+        }
         benchmark_str.push_str("i: ");
         benchmark_str.push_str(&i.to_string());
         benchmark_str.push_str(" Prover_Time: ");
-        benchmark_str.push_str(&benchmark_i[0].to_string());
+        benchmark_str.push_str(&(prover_i.iter().sum::<usize>()/prover_i.len()).to_string());
         benchmark_str.push_str(" Verifier_Time: ");
-        benchmark_str.push_str(&benchmark_i[2].to_string());
+        benchmark_str.push_str(&(verifier_i.iter().sum::<usize>()/verifier_i.len()).to_string());
         benchmark_str.push_str(" Proof_Size: ");
-        benchmark_str.push_str(&benchmark_i[1].to_string());
+        benchmark_str.push_str(&(size_i.iter().sum::<usize>()/size_i.len()).to_string());
         benchmark_str.push_str("\n");
     }
     fs::write(path, benchmark_str)?;

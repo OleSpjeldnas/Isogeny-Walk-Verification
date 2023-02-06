@@ -1,19 +1,16 @@
-i: 4 Prover_Time: 97 Verifier_Time: 28 Proof_Size: 14170
-i: 5 Prover_Time: 110 Verifier_Time: 29 Proof_Size: 19736
-i: 6 Prover_Time: 230 Verifier_Time: 32 Proof_Size: 21912
-i: 7 Prover_Time: 527 Verifier_Time: 34 Proof_Size: 27356
-i: 8 Prover_Time: 790 Verifier_Time: 33 Proof_Size: 33211
-i: 9 Prover_Time: 1498 Verifier_Time: 36 Proof_Size: 36087
-i: 10 Prover_Time: 2977 Verifier_Time: 37 Proof_Size: 42974
-i: 11 Prover_Time: 5967 Verifier_Time: 39 Proof_Size: 51108
-i: 12 Prover_Time: 12230 Verifier_Time: 46 Proof_Size: 55199
-i: 13 Prover_Time: 26242 Verifier_Time: 45 Proof_Size: 63010
-i: 14 Prover_Time: 51525 Verifier_Time: 49 Proof_Size: 71110
-i: 15 Prover_Time: 103558 Verifier_Time: 68 Proof_Size: 76863
-i: 16 Prover_Time: 207925 Verifier_Time: 67 Proof_Size: 84327
-i: 17 Prover_Time: 420413 Verifier_Time: 87 Proof_Size: 92906
-i: 18 Prover_Time: 848761 Verifier_Time: 86 Proof_Size: 99174
-i: 19 Prover_Time: 1717981 Verifier_Time: 70 Proof_Size: 109709
-
-
-
+i: 4 Prover_Time: 5 Verifier_Time: 2 Proof_Size: 14170
+i: 5 Prover_Time: 2 Verifier_Time: 2 Proof_Size: 19736
+i: 6 Prover_Time: 2 Verifier_Time: 2 Proof_Size: 21912
+i: 7 Prover_Time: 20 Verifier_Time: 2 Proof_Size: 27356
+i: 8 Prover_Time: 12 Verifier_Time: 2 Proof_Size: 33211
+i: 9 Prover_Time: 19 Verifier_Time: 2 Proof_Size: 36087
+i: 10 Prover_Time: 44 Verifier_Time: 2 Proof_Size: 42974
+i: 11 Prover_Time: 83 Verifier_Time: 2 Proof_Size: 51108
+i: 12 Prover_Time: 180 Verifier_Time: 3 Proof_Size: 55199
+i: 13 Prover_Time: 354 Verifier_Time: 3 Proof_Size: 63010
+i: 14 Prover_Time: 743 Verifier_Time: 3 Proof_Size: 71110
+i: 15 Prover_Time: 1512 Verifier_Time: 3 Proof_Size: 76863
+i: 16 Prover_Time: 3129 Verifier_Time: 3 Proof_Size: 84327
+i: 17 Prover_Time: 6461 Verifier_Time: 3 Proof_Size: 92906
+i: 18 Prover_Time: 13403 Verifier_Time: 3 Proof_Size: 99174
+i: 19 Prover_Time: 27866 Verifier_Time: 4 Proof_Size: 109709
