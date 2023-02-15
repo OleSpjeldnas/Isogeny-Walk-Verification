@@ -43,7 +43,7 @@ fn main() -> std::io::Result<()> {
         let mut prover_i: Vec<usize> = Vec::new();
         let mut verifier_i: Vec<usize> = Vec::new();
         let mut size_i: Vec<usize> = Vec::new();
-        for _ in 0..20 {
+        for _ in 0..2 {
         let benchmark_i = prove_and_verify(&roots[..2usize.pow(i)].try_into().unwrap());
         prover_i.push(benchmark_i[0]);
         verifier_i.push(benchmark_i[2]);
@@ -66,9 +66,9 @@ Ok(())
 fn prove_and_verify(roots: &Vec<BaseElement>) -> [usize; 3]{
     let phi = roots.to_vec();
     let options = ProofOptions::new(
-        28,
-        8,
+        32,
         16,
+        0,
         HashFunction::Blake3_256,
         FieldExtension::None,
         8,
