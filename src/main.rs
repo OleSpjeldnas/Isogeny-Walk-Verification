@@ -77,7 +77,7 @@ fn prove_and_verify(roots: &Vec<BaseElement>) -> [usize; 3]{
     let now = Instant::now();
     let gen_isogeny_walk_proof = build_proof(options,phi);
     let isogeny_walk_proof = gen_isogeny_walk_proof.prove();
-    let proof_gen_time = now.elapsed().as_millis().try_into().unwrap();
+    let proof_gen_time = now.elapsed().as_micros().try_into().unwrap();
     let proof_bytes = isogeny_walk_proof.to_bytes();
     let proof_length = proof_bytes.len();
     let parsed_proof = StarkProof::from_bytes(&proof_bytes).unwrap();
@@ -86,7 +86,7 @@ fn prove_and_verify(roots: &Vec<BaseElement>) -> [usize; 3]{
     let now = Instant::now();
     match gen_isogeny_walk_proof.verify(isogeny_walk_proof) {
         Ok(_) => {
-            verification_time = now.elapsed().as_millis().try_into().unwrap();
+            verification_time = now.elapsed().as_micros().try_into().unwrap();
             debug!(
             "Proof verified in {:.1} ms",
             verification_time
